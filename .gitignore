@@ -45,3 +45,4 @@ dist/
 *.egg-info/
 .eggs/
 
+private/
