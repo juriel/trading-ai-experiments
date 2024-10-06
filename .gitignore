@@ -1,0 +1,47 @@
+# Python files
+*.py[cod]
+*.pyo
+__pycache__/
+*.so
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Logs and database files
+*.log
+*.sqlite3
+
+# Test coverage
+htmlcov/
+.tox/
+.nox/
+
+# MyPy cache
+.mypy_cache/
+
+# Pytest cache
+.pytest_cache/
+
+# Django stuff:
+*.sqlite3
+db.sqlite3
+
+# VS Code settings
+.vscode/
+
+# Environment variables
+.env
+*.env
+
+# Build files
+build/
+dist/
+*.egg-info/
+.eggs/
+
