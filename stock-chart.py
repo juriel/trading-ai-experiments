@@ -26,6 +26,9 @@ def plot_stock_data(stock, data):
     mpf.plot(data, type='candle', volume=True, title=f"{stock} Stock Price", style='yahoo', addplot=ap, panel_ratios=(3,1))
 
 
+def add_rsi_to_data(data):
+    data['RSI-14'] = talib.RSI(data['Adj Close'], timeperiod=14)
+
 # Main function
 def main():
     # Set up command-line argument parsing
@@ -52,8 +55,8 @@ def main():
         print(e)
 
 
-def add_rsi_to_data(data):
-    data['RSI-14'] = talib.RSI(data['Adj Close'], timeperiod=14)
+
+
 # Entry point
 if __name__ == "__main__":
     main()

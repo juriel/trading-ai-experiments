@@ -1,4 +1,6 @@
 # Python files
+
+data/
 *.py[cod]
 *.pyo
 __pycache__/
