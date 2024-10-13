@@ -56,6 +56,17 @@ def add_indicators_to_data(data):
         data['SMA_'+str(period)+"-Close/Close"] = (data['SMA_'+str(period)] - data["Adj Close"])/data["Adj Close"] * 100.0
         columns_to_delete.append('SMA_'+str(period))
 
+        data['WMA_'+str(period)] = talib.WMA(data['Adj Close'], timeperiod=period) 
+        data['WMA_'+str(period)+"-Close/Close"] = (data['WMA_'+str(period)] - data["Adj Close"])/data["Adj Close"] * 100.0
+        columns_to_delete.append('WMA_'+str(period))
+
+        for i in range(1,5):
+            data["SMA_"+str(period)+"_diff_"+str(i)] = data['SMA_'+str(period)].pct_change(i) * 100.0
+            data["EMA_"+str(period)+"_diff_"+str(i)] = data['EMA_'+str(period)].pct_change(i) * 100.0
+            data["WMA_"+str(period)+"_diff_"+str(i)] = data['WMA_'+str(period)].pct_change(i) * 100.0
+
+    
+
     vol_periods = [5,10,15]
     for period in vol_periods:
         data['VolChg-'+str(period)] = (data['Volume'] / data['Volume'].shift(1).rolling(window=period).mean() ) - 1.0 
@@ -147,6 +158,10 @@ def add_olhc_deltas(data):
         data["delta_L-" +str(i)] = (data["L-" +str(i)] -data["Low"] )/ data["Low"] 
         columns_to_delete.append("L-" +str(i))
 
+
+    
+
+
     return columns_to_delete
 
 
@@ -178,6 +193,9 @@ def create_model(X,y):
     shape_size = input_shape=X_train.shape[1]
 
     model.add(Dense(shape_size , activation='tanh', input_shape=(shape_size,)))
+    model.add(Dropout(0.2))
+
+    model.add(Dense(shape_size , activation='sigmoid'))
     model.add(Dropout(0.2))
 
     model.add(Dense(shape_size , activation='sigmoid'))
@@ -231,7 +249,7 @@ def create_model(X,y):
     print("-------------------------------------")
     print("-------------------------------------")
 
-    last_X = X.tail(10)
+    last_X = X.tail(20)
     last_X = scaler.transform(last_X)
 
     last_row_pred_prob = model.predict(last_X)
@@ -271,14 +289,19 @@ def main():
     if args.window:
         WINDOW = int(args.window)
     # If end_date is not provided, use today's date
-    end_date = args.end_date if args.end_date else datetime.today()
+    end_date = None
+    if args.end_date:
+        end_date = args.end_date 
 
     # If start_date is not provided, use one year ago from end_date
     start_date = args.start_date if args.start_date else end_date - timedelta(days=365)
 
     # Fetch and plot stock data
     try:
-        data = fetch_stock_data(args.stock, start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d'))
+        end_date_str = None
+        if end_date:
+            end_date_str = end_date.strftime('%Y-%m-%d')
+        data = fetch_stock_data(args.stock, start_date.strftime('%Y-%m-%d'),end_date_str)
         columns_to_delete = [ "Open","High"	,"Low",	"Close",	"Adj Close",	"Volume"]
 
         more_columns_to_delete = add_indicators_to_data(data)
